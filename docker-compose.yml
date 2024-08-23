@@ -1,12 +1,12 @@
 services:
   postgres:
-    container_name: postgres-sql-bsn
+    container_name: postgres-sql-simulation
     image: postgres
     environment:
       POSTGRES_USER: innosoc
       POSTGRES_PASSWORD: Docker@2024d
       PGDATA: /var/lib/postgresql/data
-      POSTGRES_DB: book_social_network
+      POSTGRES_DB: simulation
     volumes:
       - postgres:/data/postgres
     ports:
@@ -16,7 +16,7 @@ services:
     restart: unless-stopped
 
   mail-dev:
-    container_name: mail-dev-bsn
+    container_name: mail-dev-simulation
     image: maildev/maildev
     ports:
       - "1080:1080"

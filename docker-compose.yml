@@ -10,20 +10,20 @@ services:
     volumes:
       - postgres:/data/postgres
     ports:
-      - "5432:5432"
+      - "5434:5432"
     networks:
-      - spring-demo
+      - spring-nw-sim
     restart: unless-stopped
 
   mail-dev:
     container_name: mail-dev-simulation
     image: maildev/maildev
     ports:
-      - "1080:1080"
-      - "1025:1025"
+      - "1083:1080"
+      - "1029:1025"
 
 networks:
-  spring-demo:
+  spring-nw-sim:
     driver: bridge
 
 volumes:

@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/simulation
+    url: jdbc:postgresql://localhost:5434/simulation
     username: innosoc
     password: Docker@2024d
     driver-class-name: org.postgresql.Driver
@@ -15,7 +15,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   mail:
     host: localhost
-    port: 1025
+    port: 1029
     username: innosoc
     password: Docker@2024d
     properties:
@@ -38,6 +38,7 @@ application:
   mailing:
     frontend:
       activation-url: http://localhost:4200/activate-account
+      reset-password-url: http://localhost:4200/reset-password
   file:
     uploads:
       photos-output-path: ./uploads

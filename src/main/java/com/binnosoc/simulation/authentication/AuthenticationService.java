@@ -23,6 +23,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -132,5 +133,14 @@ public class AuthenticationService {
 
         return codeBuilder.toString();
     }
+
+	public Optional<User> getUserByEmail(String email) {
+		// TODO Auto-generated method stub
+		Optional<User> user = Optional.ofNullable(userRepository.findByEmail(email)
+				
+				.orElseThrow(() -> new UsernameNotFoundException("User not found")));
+		
+		return user;
+	}
 }
 

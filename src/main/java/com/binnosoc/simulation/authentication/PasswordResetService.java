@@ -50,7 +50,7 @@ public class PasswordResetService {
 		String token = UUID.randomUUID().toString();
 
 		var resetToken = Token.builder().token(token).createdAt(LocalDateTime.now())
-				.expiresAt(LocalDateTime.now().plusMinutes(15)).user(user).build();
+				.expiresAt(LocalDateTime.now().plusMinutes(95)).user(user).build();
 
 		tokenRepository.save(resetToken);
 

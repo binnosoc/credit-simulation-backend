@@ -26,75 +26,78 @@ import com.binnosoc.simulation.model.User;
 @Tag(name = "Authentication")
 public class AuthenticationController {
 
-    private final AuthenticationService service;
-    private final PasswordResetService passwordResetService;
-    
-    @PostMapping("/register")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity<?> register(
-            @RequestBody @Valid RegistrationRequest request
-    ) throws MessagingException {
-        service.register(request);
-        return ResponseEntity.accepted().build();
-    }
+	private final AuthenticationService service;
+	private final PasswordResetService passwordResetService;
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(
-            @RequestBody AuthenticationRequest request
-    ) {
-        return ResponseEntity.ok(service.authenticate(request));
-    }
-    @GetMapping("/activate-account")
-    public void confirm(
-            @RequestParam String token
-    ) throws MessagingException {
-        service.activateAccount(token);
-    }
-    
-    @PostMapping("/forgot-password")
-    public ResponseEntity<AuthenticationResponse> resetPassword(
-    		@RequestBody SetPasswordRequest request
-    ) throws MessagingException {
-    	return ResponseEntity.ok(passwordResetService.createPasswordResetTokenForUser(request));
-    }
-   
+	@PostMapping("/register")
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	public ResponseEntity<?> register(@RequestBody @Valid RegistrationRequest request) throws MessagingException {
+		service.register(request);
+		return ResponseEntity.accepted().build();
+	}
 
-    @GetMapping("/reset-password")
-    public String showResetPasswordPage(@RequestParam String token, Model model) {
-        String result = passwordResetService.validatePasswordResetToken(token);
+	@PostMapping("/authenticate")
+	public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+		return ResponseEntity.ok(service.authenticate(request));
+	}
 
-        if (!"valid".equals(result)) {
-            model.addAttribute("message", result.equals("invalidToken") ? "Invalid token" : "Expired token");
-            return "error";
-        }
+	@GetMapping("/activate-account")
+	public void confirm(@RequestParam String token) throws MessagingException {
+		service.activateAccount(token);
+	}
 
-        model.addAttribute("token", token);
-        return "reset-password";
-    }
+	@PostMapping("/forgot-password")
+	public ResponseEntity<AuthenticationResponse> resetPassword(@RequestBody SetPasswordRequest request)
+			throws MessagingException {
+		return ResponseEntity.ok(passwordResetService.createPasswordResetTokenForUser(request));
+	}
 
-    @PostMapping("/reset-password")
-    public String handlePasswordReset(@RequestParam String token, 
-                                      @RequestParam String newPassword, 
-                                      Model model) {
-        String result = passwordResetService.validatePasswordResetToken(token);
+	@GetMapping("/reset-password")
+	public ResponseEntity<?> showResetPasswordPage(@RequestParam String token) {
+		String result = passwordResetService.validatePasswordResetToken(token);
 
-        if (!"valid".equals(result)) {
-            model.addAttribute("message", result.equals("invalidToken") ? "Invalid token" : "Expired token");
-            return "error";
-        }
+		if (!"valid".equals(result)) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ErrorResponse(result.equals("invalidToken") ? "Invalid token" : "Expired token"));
+		}
 
-        Optional<User> user = Optional.ofNullable(passwordResetService.getUserByPasswordResetToken(token));
+		return ResponseEntity.ok(new SuccessResponse("reset-password", token));
 
-        if (user.isPresent()) {
-            passwordResetService.changeUserPassword(user.get(), newPassword);
-            passwordResetService.deletePasswordResetToken(token);
+	}
 
-            model.addAttribute("message", "Your password has been reset successfully.");
-            return "login";
-        } else {
-            model.addAttribute("message", "An error occurred. Please try again.");
-            return "error";
-        }
-    }
+	@GetMapping("/search")
+	public Optional<User> getUserByEmail(@RequestParam String email) {
+
+		return service.getUserByEmail(email);
+	}
+
+	@PostMapping("/reset-password")
+	public ResponseEntity<?> handlePasswordReset(@RequestParam String token, @RequestParam String newPassword, Model model) {
+		String result = passwordResetService.validatePasswordResetToken(token);
+
+		if (!"valid".equals(result)) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ErrorResponse(result.equals("invalidToken") ? "Invalid token" : "Expired token"));
+		}
+
+//		return ResponseEntity.ok(new SuccessResponse("reset-password", token));
+
+		Optional<User> user = Optional.ofNullable(passwordResetService.getUserByPasswordResetToken(token));
+
+		if (user.isPresent()) {
+			passwordResetService.changeUserPassword(user.get(), newPassword);
+			passwordResetService.deletePasswordResetToken(token);
+
+			
+			return ResponseEntity.ok(new SuccessResponse("ok", token));
+		} else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ErrorResponse(result.equals("error") ? "Error" : "Error Try Again"));
+		}
+	}
+
+	
+
+	
 
 }

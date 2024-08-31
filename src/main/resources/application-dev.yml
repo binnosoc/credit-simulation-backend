@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5434/simulation
     username: innosoc
-    password: Docker@2024d
+    password: YourDockerPassword
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -17,7 +17,7 @@ spring:
     host: localhost
     port: 1029
     username: innosoc
-    password: Docker@2024d
+    password: YourDockerPassword
     properties:
       mail:
         smtp:
